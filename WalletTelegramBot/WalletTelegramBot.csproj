@@ -16,10 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\backend\libs\MNR.SDK.Commons.Extensions\MNR.SDK.Commons.Extensions.csproj" />
-    <ProjectReference Include="..\..\backend\libs\MNR.SDK.Commons.Mediatr\MNR.SDK.Commons.MediatR.csproj" />
-    <ProjectReference Include="..\..\backend\libs\MNR.SDK.Commons.Models\MNR.SDK.Commons.Models.csproj" />
-    <ProjectReference Include="..\..\backend\libs\MNR.SDK.DataAccess\MNR.SDK.DataAccess.csproj" />
+    <ProjectReference Include="..\libs\MNR.SDK.Commons.Extensions\MNR.SDK.Commons.Extensions.csproj" />
+    <ProjectReference Include="..\libs\MNR.SDK.Commons.Mediatr\MNR.SDK.Commons.MediatR.csproj" />
+    <ProjectReference Include="..\libs\MNR.SDK.Commons.Models\MNR.SDK.Commons.Models.csproj" />
+    <ProjectReference Include="..\libs\MNR.SDK.DataAccess\MNR.SDK.DataAccess.csproj" />
   </ItemGroup>
 
   <ItemGroup>

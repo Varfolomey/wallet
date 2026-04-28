@@ -7,13 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WalletTelegramBot", "Wallet
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{07CDBAC2-AD3B-4D38-A660-4150D689E076}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNR.SDK.Commons.MediatR", "..\backend\libs\MNR.SDK.Commons.Mediatr\MNR.SDK.Commons.MediatR.csproj", "{E3793ECB-E2DA-406A-B62B-BE267C7356DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNR.SDK.Commons.MediatR", "..\libs\MNR.SDK.Commons.Mediatr\MNR.SDK.Commons.MediatR.csproj", "{E3793ECB-E2DA-406A-B62B-BE267C7356DA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNR.SDK.Commons.Extensions", "..\backend\libs\MNR.SDK.Commons.Extensions\MNR.SDK.Commons.Extensions.csproj", "{A854D288-4AB4-4BA4-9559-B9A6582C61EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNR.SDK.Commons.Extensions", "..\libs\MNR.SDK.Commons.Extensions\MNR.SDK.Commons.Extensions.csproj", "{A854D288-4AB4-4BA4-9559-B9A6582C61EC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNR.SDK.Commons.Models", "..\backend\libs\MNR.SDK.Commons.Models\MNR.SDK.Commons.Models.csproj", "{CDC98F68-86E6-4407-AC7A-7F0CDF01CD5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNR.SDK.Commons.Models", "..\libs\MNR.SDK.Commons.Models\MNR.SDK.Commons.Models.csproj", "{CDC98F68-86E6-4407-AC7A-7F0CDF01CD5A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNR.SDK.DataAccess", "..\backend\libs\MNR.SDK.DataAccess\MNR.SDK.DataAccess.csproj", "{29555C3D-C384-4D25-A8DC-99FCD289D433}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNR.SDK.DataAccess", "..\libs\MNR.SDK.DataAccess\MNR.SDK.DataAccess.csproj", "{29555C3D-C384-4D25-A8DC-99FCD289D433}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
