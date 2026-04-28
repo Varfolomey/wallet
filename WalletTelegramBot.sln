@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34916.146
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WalletTelegramBot", "WalletTelegramBot\WalletTelegramBot.csproj", "{677FB2BA-ADB1-4F30-872F-DDCD42B312E0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{07CDBAC2-AD3B-4D38-A660-4150D689E076}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNR.SDK.Commons.MediatR", "..\backend\libs\MNR.SDK.Commons.Mediatr\MNR.SDK.Commons.MediatR.csproj", "{E3793ECB-E2DA-406A-B62B-BE267C7356DA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNR.SDK.Commons.Extensions", "..\backend\libs\MNR.SDK.Commons.Extensions\MNR.SDK.Commons.Extensions.csproj", "{A854D288-4AB4-4BA4-9559-B9A6582C61EC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNR.SDK.Commons.Models", "..\backend\libs\MNR.SDK.Commons.Models\MNR.SDK.Commons.Models.csproj", "{CDC98F68-86E6-4407-AC7A-7F0CDF01CD5A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNR.SDK.DataAccess", "..\backend\libs\MNR.SDK.DataAccess\MNR.SDK.DataAccess.csproj", "{29555C3D-C384-4D25-A8DC-99FCD289D433}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{677FB2BA-ADB1-4F30-872F-DDCD42B312E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{677FB2BA-ADB1-4F30-872F-DDCD42B312E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{677FB2BA-ADB1-4F30-872F-DDCD42B312E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{677FB2BA-ADB1-4F30-872F-DDCD42B312E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3793ECB-E2DA-406A-B62B-BE267C7356DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3793ECB-E2DA-406A-B62B-BE267C7356DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3793ECB-E2DA-406A-B62B-BE267C7356DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3793ECB-E2DA-406A-B62B-BE267C7356DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A854D288-4AB4-4BA4-9559-B9A6582C61EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A854D288-4AB4-4BA4-9559-B9A6582C61EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A854D288-4AB4-4BA4-9559-B9A6582C61EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A854D288-4AB4-4BA4-9559-B9A6582C61EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDC98F68-86E6-4407-AC7A-7F0CDF01CD5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDC98F68-86E6-4407-AC7A-7F0CDF01CD5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDC98F68-86E6-4407-AC7A-7F0CDF01CD5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDC98F68-86E6-4407-AC7A-7F0CDF01CD5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29555C3D-C384-4D25-A8DC-99FCD289D433}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29555C3D-C384-4D25-A8DC-99FCD289D433}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29555C3D-C384-4D25-A8DC-99FCD289D433}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29555C3D-C384-4D25-A8DC-99FCD289D433}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E3793ECB-E2DA-406A-B62B-BE267C7356DA} = {07CDBAC2-AD3B-4D38-A660-4150D689E076}
+		{A854D288-4AB4-4BA4-9559-B9A6582C61EC} = {07CDBAC2-AD3B-4D38-A660-4150D689E076}
+		{CDC98F68-86E6-4407-AC7A-7F0CDF01CD5A} = {07CDBAC2-AD3B-4D38-A660-4150D689E076}
+		{29555C3D-C384-4D25-A8DC-99FCD289D433} = {07CDBAC2-AD3B-4D38-A660-4150D689E076}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7FE1708B-D955-4F0D-B97A-E84ED5B21185}
+	EndGlobalSection
+EndGlobal
