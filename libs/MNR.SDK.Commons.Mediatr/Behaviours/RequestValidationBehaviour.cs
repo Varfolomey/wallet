@@ -5,24 +5,15 @@ using MNR.SDK.Commons.Models;
 
 namespace MNR.SDK.Commons.MediatR.Behaviours;
 
-public class RequestValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class RequestValidationBehaviour<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    private readonly IEnumerable<IValidator<TRequest>> _validators;
-
-    public RequestValidationBehaviour(IEnumerable<IValidator<TRequest>> validators)
-    {
-        _validators = validators;
-    }
-
-    public Task<TResponse> Handle(
-        TRequest request,
-        CancellationToken token,
-        RequestHandlerDelegate<TResponse> next)
+    public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         var context = new ValidationContext<TRequest>(request);
 
-        var failures = _validators
+        var failures = validators
             .Select(s => s.Validate(context))
             .SelectMany(result => result.Errors)
             .Where(f => f != null)

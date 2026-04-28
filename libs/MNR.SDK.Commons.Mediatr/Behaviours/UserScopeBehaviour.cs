@@ -4,18 +4,12 @@ using Microsoft.Extensions.Logging;
 
 namespace MNR.SDK.Commons.MediatR.Behaviours;
 
-public class UserScopeBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class UserScopeBehaviour<TRequest, TResponse>(ILogger<UserScopeBehaviour<TRequest, TResponse>> logger)
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    private readonly ILogger<UserScopeBehaviour<TRequest, TResponse>> _logger;
 
-    public UserScopeBehaviour(ILogger<UserScopeBehaviour<TRequest, TResponse>> logger)
-    {
-        _logger = logger;
-    }
-
-    public async Task<TResponse> Handle(
-        TRequest request, CancellationToken token, RequestHandlerDelegate<TResponse> next)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         var userId = Activity.Current?.GetBaggageItem("user.id");
         var clientId = Activity.Current?.GetBaggageItem("client.id");
@@ -24,7 +18,7 @@ public class UserScopeBehaviour<TRequest, TResponse> : IPipelineBehavior<TReques
         if (string.IsNullOrWhiteSpace(userId))
             return await next();
         
-        using var _ = _logger.BeginScope($"ReqId: {requestId}; UserId: {userId}; ClientId: {clientId}");
+        using var _ = logger.BeginScope($"ReqId: {requestId}; UserId: {userId}; ClientId: {clientId}");
         return await next();
     }
 }
