@@ -25,7 +25,7 @@ public class SpendingsController(IMediator mediator) : ControllerBase
             ToDate = toDate
         };
         var result = await mediator.Send(query);
-        return result.IsSuccess ? Ok(result.value) : BadRequest(result.errorMessages);
+        return result.Success ? Ok(result.Data) : BadRequest(result.Message);
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public class SpendingsController(IMediator mediator) : ControllerBase
             UserName = dto.UserName
         };
         var result = await mediator.Send(command);
-        return result.IsSuccess ? Ok(result.value) : BadRequest(result.errorMessages);
+        return result.Success ? Ok(result.Data) : BadRequest(result.Message);
     }
 
     /// <summary>
@@ -52,6 +52,6 @@ public class SpendingsController(IMediator mediator) : ControllerBase
     {
         var command = new DeleteSpendingCommand(id);
         var result = await mediator.Send(command);
-        return result.IsSuccess ? Ok(result.value) : NotFound(result.errorMessages);
+        return result.Success ? Ok(result.Data) : NotFound(result.Message);
     }
 }

@@ -16,14 +16,12 @@ public class GetDayReportQueryHandler(ISpendingsRepository spendingsRepo, IIncom
     public async Task<Result<DayReportDto>> Handle(GetDayReportQuery request, CancellationToken token)
     {
         var spendingsList = await spendingsRepo.ReadList(
-            s => s.DateTime >= request.Date && s.DateTime < request.Date.AddDays(1) && s.Amount < 0,
-            orderBy: s => s.DateTime,
-            token: token);
+            s => s.DateTime >= request.Date && s.DateTime < request.Date.AddDays(1) && s.Amount < 0
+            , a => a);
 
         var incomesList = await spendingsRepo.ReadList(
-            s => s.DateTime >= request.Date && s.DateTime < request.Date.AddDays(1) && s.Amount > 0,
-            orderBy: s => s.DateTime,
-            token: token);
+            s => s.DateTime >= request.Date && s.DateTime < request.Date.AddDays(1) && s.Amount > 0, 
+            a => a);
 
         var totalIncome = incomesList.list?.Sum(s => s.Amount) ?? 0;
         var totalSpent = (spendingsList.list?.Sum(s => s.Amount) ?? 0) * -1;
@@ -72,7 +70,7 @@ public class GetMonthReportQueryHandler(ISpendingsRepository repository, IIncome
             s => s.DateTime >= startDate && s.DateTime < endDate && s.Amount < 0,
             token: token);
 
-        var grouped = spends.list?
+        var grouped = spends
             .GroupBy(s => new { s.DateTime.Year, s.DateTime.Month })
             .Select(g => new MonthReportDto(
                 $"{g.Key.Month:D2}.{g.Key.Year}",

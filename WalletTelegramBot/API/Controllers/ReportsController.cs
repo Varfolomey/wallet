@@ -17,7 +17,7 @@ public class ReportsController(IMediator mediator) : ControllerBase
     {
         var query = new GetDayReportQuery(date);
         var result = await mediator.Send(query);
-        return result.IsSuccess ? Ok(result.value) : BadRequest(result.errorMessages);
+        return result.Success ? Ok(result.Data) : BadRequest(result.Message);
     }
 
     /// <summary>
@@ -28,6 +28,6 @@ public class ReportsController(IMediator mediator) : ControllerBase
     {
         var query = new GetMonthReportQuery(year, month);
         var result = await mediator.Send(query);
-        return result.IsSuccess ? Ok(result.value) : BadRequest(result.errorMessages);
+        return result.Success ? Ok(result.Data) : BadRequest(result.Message);
     }
 }

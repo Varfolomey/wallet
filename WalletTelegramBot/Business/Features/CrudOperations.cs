@@ -63,12 +63,11 @@ public class DeleteSpendingCommandHandler(ISpendingsRepository spendings)
 {
     public async Task<Result<bool>> Handle(DeleteSpendingCommand request, CancellationToken token)
     {
-        var spending = await spendings.GetById(request.Id, token);
+        var spending = await spendings.Get(a => a.Id == request.Id, token);
         if (spending == null)
             return Result<bool>.Failed("Трата не найдена");
 
-        await spendings.Delete(spending, token);
-        await spendings.UnitOfWork.SaveChangesAsync(token);
+        await spendings.RemoveAndSave(spending, token);
         return Result<bool>.Ok(true);
     }
 }
@@ -83,12 +82,11 @@ public class DeleteIncomeCommandHandler(IIncomesRepository incomes)
 {
     public async Task<Result<bool>> Handle(DeleteIncomeCommand request, CancellationToken token)
     {
-        var income = await incomes.GetById(request.Id, token);
+        var income = await incomes.Get(a => a.Id == request.Id, token);
         if (income == null)
             return Result<bool>.Failed("Доход не найден");
 
-        await incomes.Delete(income, token);
-        await incomes.UnitOfWork.SaveChangesAsync(token);
+        await incomes.RemoveAndSave(income, token);
         return Result<bool>.Ok(true);
     }
 }

@@ -23,7 +23,7 @@ public class IncomesController(IMediator mediator) : ControllerBase
             ToDate = toDate
         };
         var result = await mediator.Send(query);
-        return result.IsSuccess ? Ok(result.value) : BadRequest(result.errorMessages);
+        return result.Success ? Ok(result.Data) : BadRequest(result.Message);
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public class IncomesController(IMediator mediator) : ControllerBase
             Comment = dto.Comment
         };
         var result = await mediator.Send(command);
-        return result.IsSuccess ? Ok(result.value) : BadRequest(result.errorMessages);
+        return result.Success ? Ok(result.Data) : BadRequest(result.Message);
     }
 
     /// <summary>
@@ -49,6 +49,6 @@ public class IncomesController(IMediator mediator) : ControllerBase
     {
         var command = new DeleteIncomeCommand(id);
         var result = await mediator.Send(command);
-        return result.IsSuccess ? Ok(result.value) : NotFound(result.errorMessages);
+        return result.Success ? Ok(result.Data) : NotFound(result.Message);
     }
 }

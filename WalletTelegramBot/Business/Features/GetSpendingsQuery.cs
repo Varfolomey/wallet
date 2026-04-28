@@ -21,12 +21,9 @@ public class GetSpendingsQueryHandler(ISpendingsRepository repository)
         var spendings = await repository.GetList(
             s => (string.IsNullOrEmpty(request.UserName) || s.UserName == request.UserName)
                  && (!request.FromDate.HasValue || s.DateTime >= request.FromDate.Value)
-                 && (!request.ToDate.HasValue || s.DateTime <= request.ToDate.Value),
-            orderBy: s => s.DateTime,
-            descending: true,
-            token: token);
+                 && (!request.ToDate.HasValue || s.DateTime <= request.ToDate.Value), token);
 
-        var dtos = spendings.list?.Select(s => new SpendingDto(
+        var dtos = spendings.Select(s => new SpendingDto(
             s.Id,
             s.Amount,
             s.DateTime,
@@ -52,11 +49,9 @@ public class GetIncomesQueryHandler(IIncomesRepository repository)
         var incomes = await repository.GetList(
             i => (!request.FromDate.HasValue || i.Date >= request.FromDate.Value)
                  && (!request.ToDate.HasValue || i.Date <= request.ToDate.Value),
-            orderBy: i => i.Date,
-            descending: true,
             token: token);
 
-        var dtos = incomes.list?.Select(i => new IncomeDto(
+        var dtos = incomes.Select(i => new IncomeDto(
             i.Id,
             i.Amount,
             i.Date,
