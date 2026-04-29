@@ -1,53 +1,42 @@
 ```
 # Build artifacts
-bin/
-obj/
-out/
+*.obj
 *.exe
 *.dll
 *.pdb
-*.nupkg
-*.snupkg
+*.userprefs
+*.cache
+*.compiled
+[Bb]in/
+[Oo]bj/
 
 # Dependencies
 packages/
+**/packages/
 node_modules/
+.nuget/
+.nuget.packages/
 
-# Logs
-*.log
+# User-specific files
+*.user
+*.userosscache
+*.suo
+.vs/
+.vscode/
 
-# Environment
+# Environment specific
 .env
 .env.local
-.env.*
-
-# Editors
-.vscode/
-.idea/
-*.userprefs
-*.user
-*.suo
-*.userosscache
-*.sln.docstates
+*.local.settings.json
 
 # OS generated files
 .DS_Store
 Thumbs.db
-ehthumbs.db
-Icon?
 desktop.ini
 
-# Testing
+# Logs
+*.log
+
+# Test results
 TestResults/
-
-# User-specific files
-*.userprefs
-*.user
-*.userosscache
-*.sln.docstates
-
-# Local history for R# and other tools
-_ReSharper*/
-*.[Rr]e[Ss]harper
-*.DotSettings.user
 ```
