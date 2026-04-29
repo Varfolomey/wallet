@@ -1,4 +1,6 @@
-using Microsoft.Maui;
+using CommunityToolkit.Maui;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
 
 namespace WalletApp;
@@ -10,6 +12,7 @@ public class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
+			.UseMauiCommunityToolkit()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -28,9 +31,6 @@ public class MauiProgram
 		builder.Services.AddTransient<IncomesPage>();
 		builder.Services.AddTransient<ReportsPage>();
 
-#if DEBUG
-		builder.Logging.AddDebug();
-#endif
 
 		return builder.Build();
 	}
