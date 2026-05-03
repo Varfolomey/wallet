@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WalletApp.SpendingsPage"
+             Title="Главная">
+    <ScrollView>
+        <VerticalStackLayout Padding="12" Spacing="8">
+            <Label Text="Траты по категориям" FontAttributes="Bold" />
+            <CollectionView x:Name="GroupsView">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="4" ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="{Binding Category}" />
+                            <Label Grid.Column="1" Text="{Binding Total, StringFormat='{0:C}'}" TextColor="Red" HorizontalTextAlignment="End" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label Text="Последние вводы" />
+            <CollectionView x:Name="LogView" HeightRequest="120" />
+
+            <DatePicker x:Name="FromDatePicker" />
+            <DatePicker x:Name="ToDatePicker" />
+            <Entry x:Name="CategoriesFilterEntry" Placeholder="Фильтр категорий (еда;транспорт)" />
+            <Button Text="Применить фильтр" Clicked="OnApplyFilterClicked" />
+
+            <Entry x:Name="UserNameEntry" Placeholder="Пользователь" />
+            <Entry x:Name="AmountEntry" Placeholder="Сумма (+/-)" Keyboard="Numeric" />
+            <Entry x:Name="CommentEntry" Placeholder="Категория" />
+            <Button Text="Добавить" Clicked="OnAddClicked" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

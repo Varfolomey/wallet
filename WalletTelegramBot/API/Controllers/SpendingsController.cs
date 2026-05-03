@@ -1,25 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using MediatR;
 using WalletTelegramBot.API.DTOs;
+using WalletTelegramBot.API;
 using WalletTelegramBot.Business.Features;
 
 namespace WalletTelegramBot.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SpendingsController(IMediator mediator) : ControllerBase
+public class SpendingsController(IMediator mediator, IHubContext<SpendingHub> hub) : ControllerBase
 {
-    /// <summary>
-    /// Получить список всех трат
-    /// </summary>
     [HttpGet]
     public async Task<ActionResult<List<SpendingDto>>> GetList(
         [FromQuery] string? userName,
         [FromQuery] DateTime? fromDate,
         [FromQuery] DateTime? toDate)
     {
-        var query = new GetSpendingsQuery 
-        { 
+        var query = new GetSpendingsQuery
+        {
             UserName = userName,
             FromDate = fromDate,
             ToDate = toDate
@@ -28,9 +27,6 @@ public class SpendingsController(IMediator mediator) : ControllerBase
         return result.Success ? Ok(result.Data) : BadRequest(result.Message);
     }
 
-    /// <summary>
-    /// Создать новую трату
-    /// </summary>
     [HttpPost]
     public async Task<ActionResult<int>> Create([FromBody] CreateSpendingDto dto)
     {
@@ -41,17 +37,22 @@ public class SpendingsController(IMediator mediator) : ControllerBase
             UserName = dto.UserName
         };
         var result = await mediator.Send(command);
-        return result.Success ? Ok(result.Data) : BadRequest(result.Message);
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        await hub.Clients.All.SendAsync("spendingChanged");
+        return Ok(result.Data);
     }
 
-    /// <summary>
-    /// Удалить трату по ID
-    /// </summary>
     [HttpDelete("{id}")]
     public async Task<ActionResult<bool>> Delete(int id)
     {
         var command = new DeleteSpendingCommand(id);
         var result = await mediator.Send(command);
-        return result.Success ? Ok(result.Data) : NotFound(result.Message);
+        if (!result.Success)
+            return NotFound(result.Message);
+
+        await hub.Clients.All.SendAsync("spendingChanged");
+        return Ok(result.Data);
     }
 }

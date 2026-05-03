@@ -1,150 +1,123 @@
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Graphics;
+using Microsoft.AspNetCore.SignalR.Client;
+using System.Collections.ObjectModel;
 
 namespace WalletApp;
 
 public partial class SpendingsPage : ContentPage
 {
-	private readonly ApiService _apiService;
-	private ListView _listView;
-	private Entry _amountEntry;
-	private Entry _commentEntry;
-	private Entry _userNameEntry;
+    private readonly ApiService _apiService;
+    private HubConnection? _hubConnection;
 
-	public SpendingsPage(ApiService apiService)
-	{
-		_apiService = apiService;
-		Title = "Траты";
-		BuildUI();
-	}
+    private readonly ObservableCollection<SpendingsGroupItem> _groups = [];
+    private readonly ObservableCollection<string> _lastLog = [];
 
-	protected override async void OnAppearing()
-	{
-		base.OnAppearing();
-		await LoadSpendings();
-	}
+    public SpendingsPage(ApiService apiService)
+    {
+        InitializeComponent();
 
-	private async Task LoadSpendings()
-	{
-		try
-		{
-			var spendings = await _apiService.GetSpendingsAsync();
-			_listView.ItemsSource = spendings;
-		}
-		catch (Exception ex)
-		{
-			await DisplayAlert("Ошибка", $"Не удалось загрузить траты: {ex.Message}", "OK");
-		}
-	}
+        _apiService = apiService;
 
-	private async void OnAddClicked(object sender, EventArgs e)
-	{
-		if (!decimal.TryParse(_amountEntry.Text, out var amount))
-		{
-			await DisplayAlert("Ошибка", "Введите корректную сумму", "OK");
-			return;
-		}
+        GroupsView.ItemsSource = _groups;
+        LogView.ItemsSource = _lastLog;
 
-		try
-		{
-			var spending = new SpendingCreateDto
-			{
-				Amount = -Math.Abs(amount), // Траты сохраняются как отрицательные
-				Comment = _commentEntry.Text ?? string.Empty,
-				UserName = _userNameEntry.Text ?? string.Empty
-			};
+        FromDatePicker.Date = DateTime.Today.AddMonths(-1);
+        ToDatePicker.Date = DateTime.Today;
+    }
 
-			await _apiService.CreateSpendingAsync(spending);
-			_amountEntry.Text = string.Empty;
-			_commentEntry.Text = string.Empty;
-			await LoadSpendings();
-		}
-		catch (Exception ex)
-		{
-			await DisplayAlert("Ошибка", $"Не удалось добавить трату: {ex.Message}", "OK");
-		}
-	}
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await EnsureRealtimeAsync();
+        await RefreshAsync();
+    }
 
-	private async void OnDeleteClicked(object sender, EventArgs e)
-	{
-		if (sender is Button button && button.BindingContext is SpendingDto spending)
-		{
-			var confirm = await DisplayAlert("Подтверждение", $"Удалить трату \"{spending.Comment}\"?", "Да", "Нет");
-			if (confirm)
-			{
-				try
-				{
-					await _apiService.DeleteSpendingAsync(spending.Id);
-					await LoadSpendings();
-				}
-				catch (Exception ex)
-				{
-					await DisplayAlert("Ошибка", $"Не удалось удалить: {ex.Message}", "OK");
-				}
-			}
-		}
-	}
+    private async Task EnsureRealtimeAsync()
+    {
+        if (_hubConnection is not null)
+            return;
 
-	private void BuildUI()
-	{
-		var mainLayout = new VerticalStackLayout { Padding = 10, Spacing = 10 };
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(_apiService.GetHubUrl("hubs/spendings"))
+            .WithAutomaticReconnect()
+            .Build();
 
-		// Форма добавления
-		var formLayout = new VerticalStackLayout { Spacing = 10 };
+        _hubConnection.On("spendingChanged", async () =>
+            await MainThread.InvokeOnMainThreadAsync(RefreshAsync));
 
-		_userNameEntry = new Entry { Placeholder = "Имя пользователя" };
-		_amountEntry = new Entry { Placeholder = "Сумма", Keyboard = Keyboard.Numeric };
-		_commentEntry = new Entry { Placeholder = "Комментарий" };
+        _hubConnection.On("incomeChanged", async () =>
+            await MainThread.InvokeOnMainThreadAsync(RefreshAsync));
 
-		var addButton = new Button
-		{
-			Text = "Добавить трату",
-			Command = new Command(OnAddClicked)
-		};
+        await _hubConnection.StartAsync();
+    }
 
-		formLayout.Children.Add(_userNameEntry);
-		formLayout.Children.Add(_amountEntry);
-		formLayout.Children.Add(_commentEntry);
-		formLayout.Children.Add(addButton);
+    private async Task RefreshAsync()
+    {
+        var incomes = await _apiService.GetIncomesAsync();
+        var lastIncomeDate = incomes
+            .OrderByDescending(x => x.Date)
+            .FirstOrDefault()?.Date.Date;
 
-		// Список трат
-		_listView = new ListView
-		{
-			ItemTemplate = new DataTemplate(() =>
-			{
-				var layout = new HorizontalStackLayout { Padding = 5, Spacing = 10 };
-				var commentLabel = new Label { VerticalOptions = LayoutOptions.Center };
-				commentLabel.SetBinding(Label.TextProperty, nameof(SpendingDto.Comment));
-				
-				var amountLabel = new Label 
-				{ 
-					VerticalOptions = LayoutOptions.Center,
-					TextColor = Colors.Red
-				};
-				amountLabel.SetBinding(Label.TextProperty, nameof(SpendingDto.Amount), stringFormat: "{0:C}");
-				
-				var deleteButton = new Button 
-				{ 
-					Text = "🗑️",
-					BackgroundColor = Colors.Transparent,
-					BorderColor = Colors.Red,
-					BorderWidth = 1,
-					HorizontalOptions = LayoutOptions.End
-				};
-				deleteButton.Clicked += OnDeleteClicked;
+        var fromDate = FromDatePicker.Date;
+        if (lastIncomeDate.HasValue && fromDate < lastIncomeDate.Value)
+            fromDate = lastIncomeDate.Value;
 
-				layout.Children.Add(commentLabel);
-				layout.Children.Add(amountLabel);
-				layout.Children.Add(deleteButton);
+        var spendings = await _apiService.GetSpendingsAsync(
+            fromDate: fromDate,
+            toDate: ToDatePicker.Date);
 
-				return layout;
-			})
-		};
+        var categories = ParseCategoryFilter(CategoriesFilterEntry.Text);
+        if (categories.Count > 0)
+        {
+            spendings = spendings
+                .Where(s => categories.Any(c =>
+                    s.Comment.Contains(c, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+        }
 
-		mainLayout.Children.Add(formLayout);
-		mainLayout.Children.Add(_listView);
+        var grouped = spendings
+            .GroupBy(s => s.Comment)
+            .Select(g => new SpendingsGroupItem(g.Key, g.Sum(x => x.Amount)))
+            .OrderBy(x => x.Category)
+            .ToList();
 
-		Content = mainLayout;
-	}
+        _groups.Clear();
+        foreach (var group in grouped)
+            _groups.Add(group);
+    }
+
+    private static List<string> ParseCategoryFilter(string? value)
+    {
+        return (value ?? string.Empty)
+            .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToList();
+    }
+
+    private async void OnAddClicked(object sender, EventArgs e)
+    {
+        if (!decimal.TryParse(AmountEntry.Text, out var amount))
+            return;
+
+        await _apiService.CreateSpendingAsync(new SpendingCreateDto
+        {
+            Amount = amount,
+            Comment = CommentEntry.Text ?? string.Empty,
+            UserName = UserNameEntry.Text ?? string.Empty
+        });
+
+        _lastLog.Insert(0, $"{DateTime.Now:t}: {CommentEntry.Text} {amount}");
+        if (_lastLog.Count > 7)
+            _lastLog.RemoveAt(_lastLog.Count - 1);
+
+        AmountEntry.Text = string.Empty;
+        CommentEntry.Text = string.Empty;
+
+        await RefreshAsync();
+    }
+
+    private async void OnApplyFilterClicked(object sender, EventArgs e)
+    {
+        await RefreshAsync();
+    }
+
+    private sealed record SpendingsGroupItem(string Category, decimal Total);
 }
