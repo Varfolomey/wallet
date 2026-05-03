@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MNR.SDK.Commons.MediatR;
 using Telegram.Bot;
+using WalletTelegramBot.API;
 using WalletTelegramBot.DataAccess;
 using WalletTelegramBot.DataAccess.Repositories;
 using WalletTelegramBot.DataAccess.Repositories.Internals;
@@ -18,6 +19,7 @@ public class Program
         var services = builder.Services;
 
         services.AddControllers();
+        services.AddSignalR();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddMediatr(typeof(Program));
@@ -49,6 +51,7 @@ public class Program
         app.UseHttpsRedirection();
         app.UseAuthorization();
         app.MapControllers();
+        app.MapHub<SpendingHub>("/hubs/spendings");
         app.Run();
     }
 }

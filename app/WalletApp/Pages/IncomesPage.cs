@@ -1,146 +1,33 @@
-using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Graphics;
+using System.Collections.ObjectModel;
 
 namespace WalletApp;
 
 public partial class IncomesPage : ContentPage
 {
 	private readonly ApiService _apiService;
-	private ListView _listView;
-	private Entry _amountEntry;
-	private Entry _commentEntry;
-
-	public IncomesPage(ApiService apiService)
-	{
-		_apiService = apiService;
-		Title = "Доходы";
-		BuildUI();
-	}
-
-	protected override async void OnAppearing()
-	{
-		base.OnAppearing();
-		await LoadIncomes();
-	}
-
-	private async Task LoadIncomes()
-	{
-		try
-		{
-			var incomes = await _apiService.GetIncomesAsync();
-			_listView.ItemsSource = incomes;
-		}
-		catch (Exception ex)
-		{
-			await DisplayAlert("Ошибка", $"Не удалось загрузить доходы: {ex.Message}", "OK");
-		}
-	}
-
+	private readonly ObservableCollection<IncomeDto> _incomes = [];
+	private Entry _amountEntry = null!;
+	private Entry _commentEntry = null!;
+	private DatePicker _datePicker = null!;
+	public IncomesPage(ApiService apiService) { _apiService = apiService; Title = "Доходы"; BuildUI(); }
+	protected override async void OnAppearing() { base.OnAppearing(); await LoadIncomes(); }
+	private async Task LoadIncomes() { var items = await _apiService.GetIncomesAsync(); _incomes.Clear(); foreach (var i in items.OrderByDescending(x=>x.Date)) _incomes.Add(i); }
 	private async void OnAddClicked(object sender, EventArgs e)
 	{
-		if (!decimal.TryParse(_amountEntry.Text, out var amount))
-		{
-			await DisplayAlert("Ошибка", "Введите корректную сумму", "OK");
-			return;
-		}
-
-		try
-		{
-			var income = new IncomeCreateDto
-			{
-				Amount = Math.Abs(amount), // Доходы сохраняются как положительные
-				Comment = _commentEntry.Text ?? string.Empty
-			};
-
-			await _apiService.CreateIncomeAsync(income);
-			_amountEntry.Text = string.Empty;
-			_commentEntry.Text = string.Empty;
-			await LoadIncomes();
-		}
-		catch (Exception ex)
-		{
-			await DisplayAlert("Ошибка", $"Не удалось добавить доход: {ex.Message}", "OK");
-		}
+		if (!decimal.TryParse(_amountEntry.Text, out var amount)) return;
+		await _apiService.CreateIncomeAsync(new IncomeCreateDto { Amount = amount, Comment = $"{_datePicker.Date:yyyy-MM-dd} | {_commentEntry.Text}" });
+		_amountEntry.Text = _commentEntry.Text = string.Empty;
+		await LoadIncomes();
 	}
-
-	private async void OnDeleteClicked(object sender, EventArgs e)
-	{
-		if (sender is Button button && button.BindingContext is IncomeDto income)
-		{
-			var confirm = await DisplayAlert("Подтверждение", $"Удалить доход \"{income.Comment}\"?", "Да", "Нет");
-			if (confirm)
-			{
-				try
-				{
-					await _apiService.DeleteIncomeAsync(income.Id);
-					await LoadIncomes();
-				}
-				catch (Exception ex)
-				{
-					await DisplayAlert("Ошибка", $"Не удалось удалить: {ex.Message}", "OK");
-				}
-			}
-		}
-	}
-
 	private void BuildUI()
 	{
-		var mainLayout = new VerticalStackLayout { Padding = 10, Spacing = 10 };
-
-		// Форма добавления
-		var formLayout = new VerticalStackLayout { Spacing = 10 };
-
-		_amountEntry = new Entry { Placeholder = "Сумма", Keyboard = Keyboard.Numeric };
-		_commentEntry = new Entry { Placeholder = "Комментарий" };
-
-		var addButton = new Button
-		{
-			Text = "Добавить доход",
-			Command = new Command(OnAddClicked)
-		};
-
-		formLayout.Children.Add(_amountEntry);
-		formLayout.Children.Add(_commentEntry);
-		formLayout.Children.Add(addButton);
-
-		// Список доходов
-		_listView = new ListView
-		{
-			ItemTemplate = new DataTemplate(() =>
-			{
-				var layout = new HorizontalStackLayout { Padding = 5, Spacing = 10 };
-				var commentLabel = new Label { VerticalOptions = LayoutOptions.Center };
-				commentLabel.SetBinding(Label.TextProperty, nameof(IncomeDto.Comment));
-				
-				var amountLabel = new Label 
-				{ 
-					VerticalOptions = LayoutOptions.Center,
-					TextColor = Colors.Green
-				};
-				amountLabel.SetBinding(Label.TextProperty, nameof(IncomeDto.Amount), stringFormat: "{0:C}");
-				
-				var deleteButton = new Button 
-				{ 
-					Text = "🗑️",
-					BackgroundColor = Colors.Transparent,
-					BorderColor = Colors.Red,
-					BorderWidth = 1,
-					HorizontalOptions = LayoutOptions.End
-				};
-				deleteButton.Clicked += OnDeleteClicked;
-
-				layout.Children.Add(commentLabel);
-				layout.Children.Add(amountLabel);
-				layout.Children.Add(deleteButton);
-
-				return layout;
-			})
-		};
-
-		mainLayout.Children.Add(formLayout);
-		mainLayout.Children.Add(_listView);
-
-		Content = mainLayout;
+		var grid = new Grid { ColumnDefinitions = [new GridLength(1, GridUnitType.Star), new GridLength(1, GridUnitType.Star), new GridLength(2, GridUnitType.Star)] };
+		grid.Add(new Label { Text = "Сумма", FontAttributes = FontAttributes.Bold }, 0, 0);
+		grid.Add(new Label { Text = "Дата", FontAttributes = FontAttributes.Bold }, 1, 0);
+		grid.Add(new Label { Text = "Комментарий", FontAttributes = FontAttributes.Bold }, 2, 0);
+		var cv = new CollectionView { HeightRequest = 350, ItemsSource = _incomes, ItemTemplate = new DataTemplate(() => { var row = new Grid { ColumnDefinitions = grid.ColumnDefinitions, Padding = 2 }; var a = new Label(); a.SetBinding(Label.TextProperty, nameof(IncomeDto.Amount), stringFormat:"{0:C}"); var d = new Label(); d.SetBinding(Label.TextProperty, nameof(IncomeDto.Date), stringFormat:"{0:yyyy-MM-dd}"); var c = new Label(); c.SetBinding(Label.TextProperty, nameof(IncomeDto.Comment)); row.Add(a,0); row.Add(d,1); row.Add(c,2); return row; }) };
+		_datePicker = new DatePicker { Date = DateTime.Today }; _amountEntry = new Entry { Placeholder = "Сумма", Keyboard = Keyboard.Numeric }; _commentEntry = new Entry { Placeholder = "Комментарий" }; var btn = new Button { Text = "Добавить строку" }; btn.Clicked += OnAddClicked;
+		Content = new ScrollView { Content = new VerticalStackLayout { Padding = 12, Children = { grid, cv, _datePicker, _amountEntry, _commentEntry, btn } } };
 	}
 }
