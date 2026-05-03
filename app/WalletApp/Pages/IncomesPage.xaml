@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WalletApp.IncomesPage"
+             Title="Доходы">
+    <ScrollView>
+        <VerticalStackLayout Padding="12" Spacing="8">
+            <Grid ColumnDefinitions="*,*,2*">
+                <Label Grid.Column="0" Text="Сумма" FontAttributes="Bold"/>
+                <Label Grid.Column="1" Text="Дата" FontAttributes="Bold"/>
+                <Label Grid.Column="2" Text="Комментарий" FontAttributes="Bold"/>
+            </Grid>
+
+            <CollectionView x:Name="IncomesView" HeightRequest="350">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="2" ColumnDefinitions="*,*,2*">
+                            <Label Grid.Column="0" Text="{Binding Amount, StringFormat='{0:C}'}" />
+                            <Label Grid.Column="1" Text="{Binding Date, StringFormat='{0:yyyy-MM-dd}'}" />
+                            <Label Grid.Column="2" Text="{Binding Comment}" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <DatePicker x:Name="IncomeDatePicker" />
+            <Entry x:Name="AmountEntry" Placeholder="Сумма" Keyboard="Numeric" />
+            <Entry x:Name="CommentEntry" Placeholder="Комментарий" />
+            <Button Text="Добавить строку" Clicked="OnAddClicked" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -19,7 +19,9 @@ public class ApiService
 		};
 	}
 
-	// Spendings
+	
+	public Uri GetHubUrl(string path) => new(_httpClient.BaseAddress!, path);
+// Spendings
 	public async Task<List<SpendingDto>> GetSpendingsAsync(string? userName = null, DateTime? fromDate = null, DateTime? toDate = null)
 	{
 		var queryBuilder = new StringBuilder("?");

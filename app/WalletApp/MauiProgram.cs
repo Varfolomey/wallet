@@ -22,7 +22,7 @@ public class MauiProgram
 		// Настройка HTTP клиента для подключения к API
 		builder.Services.AddHttpClient<ApiService>(client =>
 		{
-			client.BaseAddress = new Uri("http://localhost:5000/"); // Замените на адрес вашего сервера
+			client.BaseAddress = new Uri("http://10.0.2.2:5000/"); // Android emulator -> host machine
 		});
 
 		// Регистрация страниц с внедрением зависимостей
@@ -30,7 +30,7 @@ public class MauiProgram
 		builder.Services.AddTransient<SpendingsPage>();
 		builder.Services.AddTransient<IncomesPage>();
 		builder.Services.AddTransient<ReportsPage>();
-
+		builder.Services.AddSingleton<AppShell>();
 
 		return builder.Build();
 	}
