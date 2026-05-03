@@ -1,6 +1,3 @@
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
-
 namespace WalletApp;
 
 public partial class ReportsPage : ContentPage
@@ -71,7 +68,7 @@ public partial class ReportsPage : ContentPage
 		var loadButton = new Button
 		{
 			Text = "Загрузить отчёт",
-			Command = new Command(OnLoadReportClicked)
+			//Command = new Command(OnLoadReportClicked)
 		};
 
 		periodLayout.Children.Add(_monthPicker);

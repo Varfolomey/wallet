@@ -2,7 +2,7 @@ using Microsoft.Maui.Controls;
 
 namespace WalletApp;
 
-public class AppShell : Shell
+public partial class AppShell : Shell
 {
 	private readonly DashboardPage _dashboardPage;
 	private readonly SpendingsPage _spendingsPage;
