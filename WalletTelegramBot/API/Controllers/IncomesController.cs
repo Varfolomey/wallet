@@ -1,24 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using MediatR;
 using WalletTelegramBot.API.DTOs;
+using WalletTelegramBot.API;
 using WalletTelegramBot.Business.Features;
 
 namespace WalletTelegramBot.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class IncomesController(IMediator mediator) : ControllerBase
+public class IncomesController(IMediator mediator, IHubContext<SpendingHub> hub) : ControllerBase
 {
-    /// <summary>
-    /// Получить список всех доходов
-    /// </summary>
     [HttpGet]
     public async Task<ActionResult<List<IncomeDto>>> GetList(
         [FromQuery] DateTime? fromDate,
         [FromQuery] DateTime? toDate)
     {
-        var query = new GetIncomesQuery 
-        { 
+        var query = new GetIncomesQuery
+        {
             FromDate = fromDate,
             ToDate = toDate
         };
@@ -26,9 +25,6 @@ public class IncomesController(IMediator mediator) : ControllerBase
         return result.Success ? Ok(result.Data) : BadRequest(result.Message);
     }
 
-    /// <summary>
-    /// Создать новый доход
-    /// </summary>
     [HttpPost]
     public async Task<ActionResult<int>> Create([FromBody] CreateIncomeDto dto)
     {
@@ -38,17 +34,22 @@ public class IncomesController(IMediator mediator) : ControllerBase
             Comment = dto.Comment
         };
         var result = await mediator.Send(command);
-        return result.Success ? Ok(result.Data) : BadRequest(result.Message);
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        await hub.Clients.All.SendAsync("incomeChanged");
+        return Ok(result.Data);
     }
 
-    /// <summary>
-    /// Удалить доход по ID
-    /// </summary>
     [HttpDelete("{id}")]
     public async Task<ActionResult<bool>> Delete(int id)
     {
         var command = new DeleteIncomeCommand(id);
         var result = await mediator.Send(command);
-        return result.Success ? Ok(result.Data) : NotFound(result.Message);
+        if (!result.Success)
+            return NotFound(result.Message);
+
+        await hub.Clients.All.SendAsync("incomeChanged");
+        return Ok(result.Data);
     }
 }
