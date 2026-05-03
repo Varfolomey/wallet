@@ -4,8 +4,9 @@ namespace WalletApp;
 
 public partial class App : Application
 {
-	public App()
+	public App(AppShell appShell)
 	{
-		MainPage = new AppShell();
+		InitializeComponent();
+		MainPage = appShell;
 	}
 }
