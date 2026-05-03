@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
+using Microsoft.Maui;
 
 namespace WalletApp;
 
@@ -22,10 +23,12 @@ public partial class IncomesPage : ContentPage
 	}
 	private void BuildUI()
 	{
-		var grid = new Grid { ColumnDefinitions = [new GridLength(1, GridUnitType.Star), new GridLength(1, GridUnitType.Star), new GridLength(2, GridUnitType.Star)] };
-		grid.Add(new Label { Text = "Сумма", FontAttributes = FontAttributes.Bold }, 0, 0);
-		grid.Add(new Label { Text = "Дата", FontAttributes = FontAttributes.Bold }, 1, 0);
-		grid.Add(new Label { Text = "Комментарий", FontAttributes = FontAttributes.Bold }, 2, 0);
+		var grid = new Grid
+		{
+			{ new Label { Text = "Сумма", FontAttributes = FontAttributes.Bold }, 0, 0 },
+			{ new Label { Text = "Дата", FontAttributes = FontAttributes.Bold }, 1, 0 },
+			{ new Label { Text = "Комментарий", FontAttributes = FontAttributes.Bold }, 2, 0 }
+		};
 		var cv = new CollectionView { HeightRequest = 350, ItemsSource = _incomes, ItemTemplate = new DataTemplate(() => { var row = new Grid { ColumnDefinitions = grid.ColumnDefinitions, Padding = 2 }; var a = new Label(); a.SetBinding(Label.TextProperty, nameof(IncomeDto.Amount), stringFormat:"{0:C}"); var d = new Label(); d.SetBinding(Label.TextProperty, nameof(IncomeDto.Date), stringFormat:"{0:yyyy-MM-dd}"); var c = new Label(); c.SetBinding(Label.TextProperty, nameof(IncomeDto.Comment)); row.Add(a,0); row.Add(d,1); row.Add(c,2); return row; }) };
 		_datePicker = new DatePicker { Date = DateTime.Today }; _amountEntry = new Entry { Placeholder = "Сумма", Keyboard = Keyboard.Numeric }; _commentEntry = new Entry { Placeholder = "Комментарий" }; var btn = new Button { Text = "Добавить строку" }; btn.Clicked += OnAddClicked;
 		Content = new ScrollView { Content = new VerticalStackLayout { Padding = 12, Children = { grid, cv, _datePicker, _amountEntry, _commentEntry, btn } } };
